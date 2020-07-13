@@ -411,12 +411,14 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
     if (player != null) {
       player.setAudioStreamType(AudioManager.STREAM_MUSIC);
       AudioManager audioManager = (AudioManager)this.context.getSystemService(this.context.AUDIO_SERVICE);
-      if(speaker){
+      if(speaker){      
+      	audioManager.setSpeakerphoneOn(false);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+	audioManager.adjustStreamVolume (AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
       }else{
+	audioManager.setSpeakerphoneOn(false);
         audioManager.setMode(AudioManager.MODE_NORMAL);
       }
-      audioManager.setSpeakerphoneOn(speaker);
     }
   }
 
