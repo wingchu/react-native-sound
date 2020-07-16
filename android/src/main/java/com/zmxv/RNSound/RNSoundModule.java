@@ -34,6 +34,7 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
   Boolean mixWithOthers = true;
   Double focusedPlayerKey;
   Boolean wasPlayingBeforeFocusChange = false;
+  private BluetoothAdapter BA = BluetoothAdapter.getDefaultAdapter();
 
   public RNSoundModule(ReactApplicationContext context) {
     super(context);
@@ -407,17 +408,41 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
   //turn speaker on
   @ReactMethod
   public void setSpeakerphoneOn(final Double key, final Boolean speaker) {
-    MediaPlayer player = this.playerPool.get(key);
+    final MediaPlayer player = this.playerPool.get(key);
     if (player != null) {
       player.setAudioStreamType(AudioManager.STREAM_MUSIC);
       AudioManager audioManager = (AudioManager)this.context.getSystemService(this.context.AUDIO_SERVICE);
-      if(speaker){      
+
+      if(speaker){
+        final int length = player.getCurrentPosition();
+        int mode = audioManager.getMode();
       	audioManager.setSpeakerphoneOn(false);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-	audioManager.adjustStreamVolume (AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+	    audioManager.adjustStreamVolume (AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+        if(mode != AudioManager.MODE_IN_COMMUNICATION) {
+          new android.os.Handler().postDelayed(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      player.seekTo(length);
+                    }
+                  },
+                  1500
+          );
+        }
       }else{
-	audioManager.setSpeakerphoneOn(false);
-        audioManager.setMode(AudioManager.MODE_NORMAL);
+        Set<BluetoothDevice> devices = BA.getBondedDevices();
+        if(devices.isEmpty()) {
+          audioManager.setBluetoothScoOn(false);
+          audioManager.setSpeakerphoneOn(true);
+          audioManager.setMode(AudioManager.MODE_NORMAL);
+          audioManager.adjustStreamVolume (AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+        } else {
+          audioManager.setSpeakerphoneOn(false);
+          audioManager.setBluetoothScoOn(true);
+          audioManager.startBluetoothSco();
+
+        }
       }
     }
   }
