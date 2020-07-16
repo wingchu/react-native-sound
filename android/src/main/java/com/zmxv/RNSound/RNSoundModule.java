@@ -431,17 +431,15 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
           );
         }
       }else{
-        Set<BluetoothDevice> devices = BA.getBondedDevices();
-        if(devices.isEmpty()) {
-          audioManager.setBluetoothScoOn(false);
-          audioManager.setSpeakerphoneOn(true);
-          audioManager.setMode(AudioManager.MODE_NORMAL);
-          audioManager.adjustStreamVolume (AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
-        } else {
+        boolean isConnected = false;
+        isConnected = BA != null && BA.isEnabled() && BA.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothHeadset.STATE_CONNECTED;
+        if(isConnected) {
           audioManager.setSpeakerphoneOn(false);
-          audioManager.setBluetoothScoOn(true);
+          audioManager.setMode(AudioManager.MODE_NORMAL);
+        } else {
+          audioManager.setBluetoothScoOn(false);
           audioManager.startBluetoothSco();
-
+          audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
         }
       }
     }
