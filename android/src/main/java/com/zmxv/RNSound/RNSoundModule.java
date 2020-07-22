@@ -439,6 +439,9 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
         } else {
           audioManager.setBluetoothScoOn(false);
           audioManager.startBluetoothSco();
+          audioManager.setSpeakerphoneOn(false);
+          audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
+          player.setAudioStreamType(AudioManager.STREAM_MUSIC);
           audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
         }
       }
