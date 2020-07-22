@@ -1,5 +1,7 @@
 package com.zmxv.RNSound;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothHeadset;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
@@ -418,7 +420,7 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
         int mode = audioManager.getMode();
       	audioManager.setSpeakerphoneOn(false);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-	    audioManager.adjustStreamVolume (AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+	      audioManager.adjustStreamVolume (AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
         if(mode != AudioManager.MODE_IN_COMMUNICATION) {
           new android.os.Handler().postDelayed(
                   new Runnable() {
@@ -433,11 +435,11 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
       }else{
         boolean isConnected = false;
         isConnected = BA != null && BA.isEnabled() && BA.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothHeadset.STATE_CONNECTED;
-        if(isConnected) {
+        if(!isConnected) {
           audioManager.setSpeakerphoneOn(false);
           audioManager.setMode(AudioManager.MODE_NORMAL);
         } else {
-          audioManager.setBluetoothScoOn(false);
+          audioManager.setBluetoothScoOn(true);
           audioManager.startBluetoothSco();
           audioManager.setSpeakerphoneOn(false);
           audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
