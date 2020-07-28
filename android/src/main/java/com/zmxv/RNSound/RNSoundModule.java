@@ -418,15 +418,17 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
       if(speaker){
         final int length = player.getCurrentPosition();
         int mode = audioManager.getMode();
-      	audioManager.setSpeakerphoneOn(false);
+        audioManager.setSpeakerphoneOn(false);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-	      audioManager.adjustStreamVolume (AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+        audioManager.adjustStreamVolume (AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
         if(mode != AudioManager.MODE_IN_COMMUNICATION) {
+          player.pause();
           new android.os.Handler().postDelayed(
                   new Runnable() {
                     @Override
                     public void run() {
                       player.seekTo(length);
+                      player.start();
                     }
                   },
                   1500
