@@ -407,14 +407,12 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
     callback.invoke(player.getCurrentPosition() * .001, player.isPlaying());
   }
 
-  //turn speaker on
   @ReactMethod
   public void setSpeakerphoneOn(final Double key, final Boolean speaker) {
     final MediaPlayer player = this.playerPool.get(key);
     if (player != null) {
       player.setAudioStreamType(AudioManager.STREAM_MUSIC);
       AudioManager audioManager = (AudioManager)this.context.getSystemService(this.context.AUDIO_SERVICE);
-
       if(speaker){
         final int length = player.getCurrentPosition();
         int mode = audioManager.getMode();
@@ -427,8 +425,13 @@ public class RNSoundModule extends ReactContextBaseJavaModule implements AudioMa
                   new Runnable() {
                     @Override
                     public void run() {
-                      player.seekTo(length);
-                      player.start();
+                      try {
+                        player.seekTo(length);
+                        player.start();
+                      }
+                      catch(Exception e) {
+                        Log.e("SOUND ERROR", "CANNOT SEEk");
+                      }
                     }
                   },
                   1500
